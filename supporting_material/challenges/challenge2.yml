@@ -1,0 +1,84 @@
+Description: >
+    Challenge2.
+Parameters:
+  VPCCIDR:
+    Type: String
+  PrivSubnetCIDR:
+    Type: String
+  PubSubnetCIDR:
+    Type: String
+Resources:
+  MainVPC: 
+    Type: AWS::EC2::VPC
+    Properties:
+        CidrBlock: !Ref VPCCIDR
+        EnableDnsHostnames: true
+        Tags: 
+            - Key: Name 
+              Value: "Main VPC"
+  InternetGW:
+    Type: AWS::EC2::InternetGateway
+  AttachInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+        InternetGatewayId: !Ref InternetGW
+        VpcId: !Ref MainVPC 
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties: 
+      # Availability zone at your discretion or
+      # as a parameter
+      AvailabilityZone: 'us-east-1a'
+      CidrBlock: !Ref PubSubnetCIDR
+      MapPublicIpOnLaunch: true
+      Tags: 
+        - Key: Name
+          Value: "Public Subnet AZ1"
+      VpcId: !Ref MainVPC
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: 'us-east-1b'
+      CidrBlock: !Ref PrivSubnetCIDR
+      MapPublicIpOnLaunch: false
+      Tags: 
+        - Key: Name
+          Value: "Private Subnet AZ1"
+      VpcId: !Ref MainVPC
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+        Tags:
+        - Key: Name
+          Value: "Elastic IP for our NAT Gateway"
+  NAT:
+    Type: AWS::EC2::NatGateway
+    Properties:
+        AllocationId:
+          Fn::GetAtt:
+          - EIP
+          - AllocationId
+        SubnetId: !Ref PublicSubnet
+        Tags:
+        - Key: Name
+          Value: "NAT to be used by servers in the private subnet"               
+  PublicRouteTable:
+        Type: AWS::EC2::RouteTable
+        Properties: 
+            VpcId: !Ref MainVPC
+            Tags: 
+                - Key: Name 
+                  Value: "Public Route Table"
+  DefaultPublicRoute: 
+      Type: AWS::EC2::Route
+      DependsOn: AttachInternetGateway
+      Properties: 
+          RouteTableId: !Ref PublicRouteTable
+          DestinationCidrBlock: 0.0.0.0/0
+          GatewayId: !Ref InternetGW
+
+  PublicSubnet1RouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+          RouteTableId: !Ref PublicRouteTable
+          SubnetId: !Ref PublicSubnet          

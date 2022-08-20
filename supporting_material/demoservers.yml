@@ -18,12 +18,12 @@ Resources:
       - IpProtocol: tcp
         FromPort: 80
         ToPort: 80
-        CidrIp: 0.0.0.0/0 # allow traffic from anywhere as long it is port 80
+        CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
       - IpProtocol: tcp
         FromPort: 80
         ToPort: 80
-        CidrIp: 0.0.0.0/0 # allow traffic from anywhere as long it is port 80
+        CidrIp: 0.0.0.0/0
   WebServerSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -35,16 +35,16 @@ Resources:
       - IpProtocol: tcp
         FromPort: 8080
         ToPort: 8080
-        CidrIp: 0.0.0.0/0 
+        CidrIp: 0.0.0.0/0
       - IpProtocol: tcp
         FromPort: 22
         ToPort: 22
-        CidrIp: 0.0.0.0/0 # open ssh port to allow linux servers to troubleshoot
+        CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
       - IpProtocol: tcp
         FromPort: 0
         ToPort: 65535
-        CidrIp: 0.0.0.0/0 # outbound traffic rule to anywhere
+        CidrIp: 0.0.0.0/0
   WebAppLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
@@ -57,14 +57,13 @@ Resources:
       # ToDo: AMI ID of Ubuntu Linux machine. Too get one, try creating a VM from the web console. 
       ImageId: ami-0747bdcabd34c712a
       # ToDo: Change the key-pair name, as applicable to you. 
-      KeyName: nd9990_keypair
       SecurityGroups:
       - Ref: WebServerSecGroup
       InstanceType: t3.medium
       BlockDeviceMappings:
       - DeviceName: "/dev/sdk"
         Ebs:
-          VolumeSize: '10'
+          VolumeSize: '10' # hard space        
   WebAppGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -76,7 +75,7 @@ Resources:
       MinSize: '3'
       MaxSize: '5'
       TargetGroupARNs:
-      - Ref: WebAppTargetGroup
+      - Ref: WebAppTargetGroup          
   WebAppLB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
@@ -97,7 +96,7 @@ Resources:
       Port: '80'
       Protocol: HTTP
   ALBListenerRule:
-      Type: AWS::ElasticLoadBalancingV2::ListenerRule
+      Type: AWS::ElasticLoadBalancingV2::ListenerRule # listener sent to the target group when something unhealthy happened
       Properties:
         Actions:
         - Type: forward
@@ -120,4 +119,4 @@ Resources:
       UnhealthyThresholdCount: 5
       VpcId: 
         Fn::ImportValue:
-          Fn::Sub: "${EnvironmentName}-VPCID"
+          Fn::Sub: "${EnvironmentName}-VPCID"      
