@@ -28,3 +28,6 @@ You can run the supporting material in two easy steps:
 # Check the region in the update.sh file
 ./update.sh mySecStack servers.yml server-parameters.json
 ```
+
+### URL (If the student provides a URL to verify his work is running properly, it will be a page that says “it works! Udagram, Udacity”)
+http://proj2-webap-mlb7hshhm82b-1822405531.us-east-1.elb.amazonaws.com/
