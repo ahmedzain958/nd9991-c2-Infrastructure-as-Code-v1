@@ -30,4 +30,4 @@ You can run the supporting material in two easy steps:
 ```
 
 ### URL (If the student provides a URL to verify his work is running properly, it will be a page that says “it works! Udagram, Udacity”)
-http://proj2-webap-mlb7hshhm82b-1822405531.us-east-1.elb.amazonaws.com/
+http://proj2-webap-28fnfyr4yd1a-347715283.us-east-1.elb.amazonaws.com/
