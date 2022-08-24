@@ -128,4 +128,6 @@ Resources:
           Fn::Sub: "${EnvironmentName}-VPCID"
 Outputs:
   LoadBalancerOutput:
-    Value: !GetAtt WebAppLB.DNSName            
+    Value: !GetAtt WebAppLB.DNSName 
+  LoadBalancerURL:
+    Value: !Join [ "", [ "http://", !GetAtt WebAppLB.DNSName ]]
